@@ -1,0 +1,19 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "autotranslator"
+version = "1.21.1-1.0.0"
+displayName = "Auto Translator"
+authors = "ten"
+description = '''
+Minecraftのチャットを非同期で翻訳するMODです。
+'''
+entrypoint = "com.example.autotranslator.AutoTranslator"
+
+[[dependencies.autotranslator]]
+modId = "neoforge"
+mandatory = true
+side = "BOTH"
+ordering = "AFTER"
