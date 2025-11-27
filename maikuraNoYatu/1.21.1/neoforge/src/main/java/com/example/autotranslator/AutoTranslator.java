@@ -11,8 +11,9 @@ import net.neoforged.fml.common.Mod;
 
 @Mod("autotranslator")
 public class AutoTranslator {
+    private static boolean sending = true;
 
-//    @SubscribeEvent
+    //    @SubscribeEvent
 //    public static void onChat(ClientChatReceivedEvent event) {
 //        // チャットメッセージの取得
 //        Component message = event.getMessage();
@@ -26,25 +27,26 @@ public class AutoTranslator {
 //        Minecraft.getInstance().gui.getChat().addMessage(Component.literal(translated));
 //    }
     public AutoTranslator() {
-        // クライアント専用のイベントバスへ登録
         if (FMLEnvironment.dist == Dist.CLIENT) {
             NeoForge.EVENT_BUS.register(AutoTranslator.class);
         }
     }
+
     @SubscribeEvent
     public static void onClientChat(ClientChatEvent event) {
-        String original = event.getMessage();
+        if (sending) {
+            String original = event.getMessage();
+            event.setCanceled(true);
+            TranslationUtil.translateIfNeededAsync(original).thenAccept(translated -> {
+                Minecraft.getInstance().execute(() -> {
+                    Minecraft.getInstance().player.connection.sendChat(translated);
+                    sending = false;
+                });
 
-        if(original.startsWith("翻訳済：")) {
+            });
+        } else {
+            sending = false;
             return;
         }
-        // まずキャンセルして、翻訳が終わってから送信
-        event.setCanceled(true);
-
-        TranslationManager.translateAsync(original).thenAccept(translated -> {
-            Minecraft.getInstance().execute(() -> {
-                Minecraft.getInstance().player.connection.sendChat("翻訳済："+translated);
-            });
-        });
     }
 }

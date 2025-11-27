@@ -31,7 +31,9 @@ public class TranslationManager {
                 String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
                 // 非公式 Google 翻訳APIの例
                 String url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&dt=t&q=" + encoded;
-                LOGGER.info("[Translator] 翻訳開始: {}", text); // ← ここで確認
+
+                LOGGER.info("[Translator] 翻訳開始: {}", text);
+
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .GET()
@@ -39,9 +41,9 @@ public class TranslationManager {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 String body = response.body();
-                LOGGER.info("[Translator] json: {}", body); // ← ここで確認
-                // レスポンス例: [[[\"こんにちは\",\"Hello\",null,null,1]],null,\"en\"]
-                // とりあえず正規表現で最初の翻訳文字列を抽出
+
+                LOGGER.info("[Translator] json: {}", body);
+
                 String translated = body.split("\"")[1];
 
                 return translated;
