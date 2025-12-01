@@ -21,7 +21,6 @@ public class TranslationUtil {
     private static final String PREFIX = "翻訳済：";
 
     public static CompletableFuture<String> translateIfNeededAsync(String s) {
-        LOGGER.info("[TranslationUtil] translateIfNeededAsyncに入りました{}", s);
         if (skip(s)) {
             LOGGER.info("[TranslationUtil] 翻訳がスキップされました{}", s);
             return completed(s);
