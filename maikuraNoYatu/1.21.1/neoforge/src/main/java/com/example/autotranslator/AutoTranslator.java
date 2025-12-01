@@ -12,6 +12,9 @@ import net.neoforged.fml.common.Mod;
 @Mod("autotranslator")
 public class AutoTranslator {
     private static boolean sending = true;
+    private static int tickCount = 0;
+    private final int SAVE_INTERVAL = 300;
+    private final int TICKS_PER_SECOND = 20;
 
     //    @SubscribeEvent
 //    public static void onChat(ClientChatReceivedEvent event) {
@@ -35,18 +38,31 @@ public class AutoTranslator {
     @SubscribeEvent
     public static void onClientChat(ClientChatEvent event) {
         if (sending) {
-            String original = event.getMessage();
-            event.setCanceled(true);
-            TranslationUtil.translateIfNeededAsync(original).thenAccept(translated -> {
-                Minecraft.getInstance().execute(() -> {
-                    Minecraft.getInstance().player.connection.sendChat(translated);
-                    sending = false;
-                });
-
-            });
-        } else {
             sending = false;
-            return;
+            event.setCanceled(true);
+            String original = event.getMessage();
+            String translated = TranslationCache.translateText(original);
+
+            Minecraft.getInstance().execute(() -> {
+                Minecraft.getInstance().player.connection.sendChat(translated);
+            });
+        }else{
+            sending = true;
+        }
+        return;
+    }
+
+    @SubscribeEvent
+    public static void onCommonSetup(FMLCommonSetupEvent event) {TranslationCache.load();}
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {TranslationCache.save();}
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent event) {
+        tickCount++;
+        if (tickCount % (TICKS_PER_SECOND * SAVE_INTERVAL) == 0) {
+            TranslationCache.save();
         }
     }
 }

@@ -29,7 +29,6 @@ public class TranslationManager {
             try {
                 // URLエンコード
                 String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
-                // 非公式 Google 翻訳APIの例
                 String url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&dt=t&q=" + encoded;
 
                 LOGGER.info("[Translator] 翻訳開始: {}", text);
@@ -49,7 +48,7 @@ public class TranslationManager {
                 return translated;
             } catch (Exception e) {
                 LOGGER.warn("翻訳中にエラー発生: {}", e.getMessage());
-                return text; // 失敗した場合は元の文字列を返す
+                return text;
             }
         });
     }
