@@ -1,8 +1,17 @@
 package com.example.autotranslator;
 
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
 public class TranslationUtil {
@@ -12,11 +21,12 @@ public class TranslationUtil {
     private static final String PREFIX = "翻訳済：";
 
     public static CompletableFuture<String> translateIfNeededAsync(String s) {
+        LOGGER.info("[TranslationUtil] translateIfNeededAsyncに入りました{}", s);
         if (skip(s)) {
             LOGGER.info("[TranslationUtil] 翻訳がスキップされました{}", s);
             return completed(s);
         }
-
+        LOGGER.info("[TranslationUtil] 通常通り翻訳されました{}", s);
         return TranslationManager.translateAsync(s)
                 .thenApply(t -> PREFIX + t);
     }
