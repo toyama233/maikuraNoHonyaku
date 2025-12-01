@@ -13,8 +13,7 @@ import net.neoforged.fml.common.Mod;
 public class AutoTranslator {
     private static boolean sending = true;
     private static int tickCount = 0;
-    private final int SAVE_INTERVAL = 300;
-    private final int TICKS_PER_SECOND = 20;
+    private final int AUTOSAVE_TICKS  = 20 * 300;
 
     //    @SubscribeEvent
 //    public static void onChat(ClientChatReceivedEvent event) {
@@ -61,7 +60,7 @@ public class AutoTranslator {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent event) {
         tickCount++;
-        if (tickCount % (TICKS_PER_SECOND * SAVE_INTERVAL) == 0) {
+        if (tickCount % (AUTOSAVE_TICKS) == 0) {
             TranslationCache.save();
         }
     }
