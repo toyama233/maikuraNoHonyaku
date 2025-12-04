@@ -7,17 +7,21 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 public class TranslationCache {
     private static final String FILE_NAME = "translation_cache.json";
     private static final Gson gson = new Gson();
     private static Map<String, String> cache = new HashMap<>();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static void load() {
         try (Reader reader = new FileReader(FILE_NAME)) {
             Type type = new TypeToken<Map<String, String>>(){}.getType();
             cache = gson.fromJson(reader, type);
             if (cache == null) cache = new HashMap<>();
+            LOGGER.info("[TranslationCache.load] キャッシュをロードしました");
         } catch (IOException e) {
             cache = new HashMap<>();
         }
@@ -26,9 +30,11 @@ public class TranslationCache {
     public static void save() {
         try (Writer writer = new FileWriter(FILE_NAME)) {
             gson.toJson(cache, writer);
+            LOGGER.info("[TranslationCache.save] キャッシュをセーブしました");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public static String get(String original) {
