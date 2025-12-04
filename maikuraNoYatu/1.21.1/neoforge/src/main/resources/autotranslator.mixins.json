@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.example.autotranslator",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "mixins": [
+  ],
+  "client": [
+    "GuiGraphicsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

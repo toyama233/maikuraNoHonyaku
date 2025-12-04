@@ -17,3 +17,6 @@ modId = "neoforge"
 mandatory = true
 side = "BOTH"
 ordering = "AFTER"
+
+[[mixins]]
+config="translationmod.mixins.json"

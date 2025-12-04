@@ -1,19 +1,23 @@
 package com.example.autotranslator;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.IEventBus;
+
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 @Mod("autotranslator")
 public class AutoTranslator {
     private static boolean sending = true;
-    private static int tickCount = 0;
-    private final int AUTOSAVE_TICKS  = 20 * 300;
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static int CNT = 0;
 
     //    @SubscribeEvent
 //    public static void onChat(ClientChatReceivedEvent event) {
@@ -28,12 +32,12 @@ public class AutoTranslator {
 //        event.setCanceled(true); // 元のメッセージをキャンセル
 //        Minecraft.getInstance().gui.getChat().addMessage(Component.literal(translated));
 //    }
-    public AutoTranslator() {
+    public AutoTranslator(IEventBus modBus) {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             NeoForge.EVENT_BUS.register(AutoTranslator.class);
         }
+        modBus.addListener(AutoTranslator::onCommonSetup);
     }
-
     @SubscribeEvent
     public static void onClientChat(ClientChatEvent event) {
         if (sending) {
@@ -46,22 +50,9 @@ public class AutoTranslator {
                 Minecraft.getInstance().player.connection.sendChat(translated);
             });
         }else{
+            LOGGER.info("[AutoTranslator] ループ{}", ++CNT);
             sending = true;
         }
-        return;
     }
-
-    @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {TranslationCache.load();}
-
-    @SubscribeEvent
-    public static void onServerStopping(ServerStoppingEvent event) {TranslationCache.save();}
-
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent event) {
-        tickCount++;
-        if (tickCount % (AUTOSAVE_TICKS) == 0) {
-            TranslationCache.save();
-        }
-    }
 }

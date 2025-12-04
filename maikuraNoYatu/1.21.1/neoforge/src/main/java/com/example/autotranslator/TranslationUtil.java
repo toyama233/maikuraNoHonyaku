@@ -1,17 +1,8 @@
 package com.example.autotranslator;
 
-import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
+import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
 public class TranslationUtil {
