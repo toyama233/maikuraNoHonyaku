@@ -141,6 +141,12 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     // Mixin annotation processor
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+    jarJar(group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '[5.2.1,6.0)')
+    implementation 'org.apache.httpcomponents.core5:httpcore5:5.2.1'
+    jarJar(group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '[5.2.1,6.0)')
+    implementation 'org.apache.httpcomponents.core5:httpcore5-h2:5.2.1'
+    jarJar(group: 'org.apache.httpcomponents.core5', name: 'httpcore5-h2', version: '[5.2.1,6.0)')
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -174,12 +180,6 @@ publishing {
     publications {
         register('mavenJava', MavenPublication) {
             from components.java
-        }
-    }
-    repositories {
-        maven {
-            url = "https://maven.parchmentmc.org"
-
         }
     }
 }
