@@ -1,74 +1,49 @@
 package com.example.autotranslator;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class TranslationManager {
 
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final HttpClient httpClient = HttpClient.newHttpClient().
-            connectTimeout()
-            .followRedirects(HttpClient.Redirect.NORMAL)
-            .build();
+    private static final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    /**
-     * 非同期で翻訳するメソッド
-     * @param text 元の文字列
-     * @return CompletableFuture<String> 翻訳後文字列
-     */
     public static CompletableFuture<String> translateAsync(String text) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                // URLエンコード
                 String encoded = URLEncoder.encode(text, StandardCharsets.UTF_8);
                 String url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ja&dt=t&q=" + encoded;
 
                 LOGGER.info("[Translator] 翻訳開始: {}", text);
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("User-Agent", "Mozilla/5.0")
-                        .GET()
-                        .timeout(Duration.ofSeconds(30))  // タイムアウトを設定
-                        .build();
+                HttpGet request = new HttpGet(url);
+                request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+                request.setHeader("Referer", "https://translate.google.com/");
 
-                LOGGER.info("[Translator]リクエスト送信前: " + url);
+                LOGGER.info("[Translator]リクエスト送信前: {}", url);
 
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                CloseableHttpResponse response = httpClient.execute(request);
+                String body = EntityUtils.toString(response.getEntity());
 
-                LOGGER.info("[Translator]レスポンス受信: ステータス=" + response.statusCode());
-
-                String body = response.body();
-
-                LOGGER.info("[Translator]ボディ取得完了: 長さ=" + (body != null ? body.length() : "null"));
-
-//                HttpRequest request = HttpRequest.newBuilder()
-//                        .uri(URI.create(url))
-//                        .GET()
-//                        .build();
-//
-//                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-//                String body = response.body();
-
+                LOGGER.info("[Translator]ボディ取得完了: 長さ={}", body != null ? body.length() : "null");
                 LOGGER.info("[Translator] json: {}", body);
 
-//                String translated = body.split("\"")[1];
                 JsonElement element = JsonParser.parseString(body);
                 String translated = FindTranslatString(element);
                 return translated;
