@@ -7,6 +7,8 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
@@ -18,7 +20,8 @@ public class TranslationCache {
 
     public static void load() {
         try (Reader reader = new FileReader(FILE_NAME)) {
-            Type type = new TypeToken<Map<String, String>>(){}.getType();
+            Type type = new TypeToken<Map<String, String>>() {
+            }.getType();
             cache = gson.fromJson(reader, type);
             if (cache == null) cache = new HashMap<>();
             LOGGER.info("[TranslationCache.load] キャッシュをロードしました");
@@ -32,7 +35,8 @@ public class TranslationCache {
             gson.toJson(cache, writer);
             LOGGER.info("[TranslationCache.save] キャッシュをセーブしました");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn("翻訳中にエラー発生: 例外タイプ={}, メッセージ={}", e.getClass().getName(), e.getMessage());
+            LOGGER.warn("スタックトレース: ", e);
         }
 
     }
@@ -44,14 +48,15 @@ public class TranslationCache {
     public static void put(String original, String translated) {
         cache.put(original, translated);
     }
-    public static String translateText(String text) {
+
+    public static CompletableFuture<String> translateText(String text) {
         String cached = TranslationCache.get(text);
         if (cached != null) {
-            return cached;
+            return CompletableFuture.completedFuture(cached);
         }
-
-        String translated = TranslationUtil.translateIfNeededAsync(text).join(); // 既存の翻訳処理
-        TranslationCache.put(text, translated);
-        return translated;
+        return TranslationUtil.translateIfNeededAsync(text).thenApply(translated -> {
+            TranslationCache.put(text, translated);
+            return translated;
+        });
     }
 }

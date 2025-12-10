@@ -49,8 +49,7 @@ public class TranslationManager {
                 return translated;
             } catch (Exception e) {
 //                LOGGER.warn("翻訳中にエラー発生: {}", e.getMessage());
-                LOGGER.warn("翻訳中にエラー発生: 例外タイプ={}, メッセージ={}",
-                        e.getClass().getName(), e.getMessage());
+                LOGGER.warn("翻訳中にエラー発生: 例外タイプ={}, メッセージ={}", e.getClass().getName(), e.getMessage());
                 LOGGER.warn("スタックトレース: ", e);  // 完全なスタックトレースをログ出力
                 return text;
             }
