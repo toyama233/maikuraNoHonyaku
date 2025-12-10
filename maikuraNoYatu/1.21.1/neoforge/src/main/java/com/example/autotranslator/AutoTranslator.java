@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 public class AutoTranslator {
     private static boolean sending = true;
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static int CNT = 0;
 
     //    @SubscribeEvent
 //    public static void onChat(ClientChatReceivedEvent event) {
@@ -38,21 +37,24 @@ public class AutoTranslator {
         }
         modBus.addListener(AutoTranslator::onCommonSetup);
     }
+
     @SubscribeEvent
     public static void onClientChat(ClientChatEvent event) {
         if (sending) {
             sending = false;
             event.setCanceled(true);
             String original = event.getMessage();
-            String translated = TranslationCache.translateText(original);
-
-            Minecraft.getInstance().execute(() -> {
-                Minecraft.getInstance().player.connection.sendChat(translated);
+            TranslationCache.translateText(original).thenAccept(translated -> {
+                Minecraft.getInstance().execute(() -> {
+                    Minecraft.getInstance().player.connection.sendChat(translated);
+                });
             });
-        }else{
-            LOGGER.info("[AutoTranslator] ループ{}", ++CNT);
+        } else {
             sending = true;
         }
     }
-    public static void onCommonSetup(FMLCommonSetupEvent event) {TranslationCache.load();}
+
+    public static void onCommonSetup(FMLCommonSetupEvent event) {
+        TranslationCache.load();
+    }
 }
