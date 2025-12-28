@@ -1,12 +1,14 @@
 {
   "required": true,
-  "package": "com.example.autotranslator",
+  "package": "com.example.autotranslator.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
+  "refmap": "autotranslator.refmap.json",
   "mixins": [
   ],
   "client": [
-    "GuiGraphicsMixin"
+    "FontFormattedMixin"
+
   ],
   "injectors": {
     "defaultRequire": 1
