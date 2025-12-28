@@ -2,6 +2,7 @@ package com.example.autotranslator;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.example.autotranslator.debug.TranslationDebugLogger;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
@@ -9,7 +10,8 @@ public class TranslationUtil {
 
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final double JP_THRESHOLD  = 0.3;
-    private static final String PREFIX = "翻訳済：";
+    private static final String PREFIX = TranslationDebugLogger.DEBUG ? "翻訳済：" : "";
+
 
     public static CompletableFuture<String> translateIfNeededAsync(String s) {
         if (skip(s)) {
@@ -26,6 +28,7 @@ public class TranslationUtil {
     }
 
     private static boolean isTranslated(String s) {
+        if (!TranslationDebugLogger.DEBUG) return false;
         return s.startsWith(PREFIX);
     }
 

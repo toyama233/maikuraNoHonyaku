@@ -12,6 +12,8 @@ import java.util.concurrent.CompletableFuture;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
+import static com.example.autotranslator.debug.TranslationDebugLogger.logOnce;
+
 public class TranslationCache {
     private static final String FILE_NAME = "translation_cache.json";
     private static final Gson gson = new Gson();
@@ -24,7 +26,7 @@ public class TranslationCache {
             }.getType();
             cache = gson.fromJson(reader, type);
             if (cache == null) cache = new HashMap<>();
-            LOGGER.info("[TranslationCache.load] キャッシュをロードしました");
+            logOnce("[TranslationCache.load] キャッシュをロードしました");
         } catch (IOException e) {
             cache = new HashMap<>();
         }
@@ -33,10 +35,10 @@ public class TranslationCache {
     public static void save() {
         try (Writer writer = new FileWriter(FILE_NAME)) {
             gson.toJson(cache, writer);
-            LOGGER.info("[TranslationCache.save] キャッシュをセーブしました");
+            logOnce("[TranslationCache.save] キャッシュをセーブしました");
         } catch (IOException e) {
-            LOGGER.warn("翻訳中にエラー発生: 例外タイプ={}, メッセージ={}", e.getClass().getName(), e.getMessage());
-            LOGGER.warn("スタックトレース: ", e);
+            logOnce("翻訳中にエラー発生: 例外タイプ=" + e.getClass().getName() + ", メッセージ=" + e.getMessage());
+            logOnce("スタックトレース: " + e);  // 完全なスタックトレースをログ出力
         }
 
     }

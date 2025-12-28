@@ -1,5 +1,6 @@
 package com.example.autotranslator;
 
+import com.example.autotranslator.debug.TranslationDebugLogger;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -18,19 +19,6 @@ public class AutoTranslator {
     private static boolean sending = true;
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    //    @SubscribeEvent
-//    public static void onChat(ClientChatReceivedEvent event) {
-//        // チャットメッセージの取得
-//        Component message = event.getMessage();
-//        String originalText = message.getString();
-//
-//        // 翻訳処理（あなたのクラス）
-//        String translated = TranslationManager.translate(originalText);
-//
-//        // イベントの置き換えは不可能になったため、自前で再送信
-//        event.setCanceled(true); // 元のメッセージをキャンセル
-//        Minecraft.getInstance().gui.getChat().addMessage(Component.literal(translated));
-//    }
     public AutoTranslator(IEventBus modBus) {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             NeoForge.EVENT_BUS.register(AutoTranslator.class);
@@ -38,8 +26,15 @@ public class AutoTranslator {
         modBus.addListener(AutoTranslator::onCommonSetup);
     }
 
+    public static void onCommonSetup(FMLCommonSetupEvent event) {
+        TranslationCache.load();
+    }
+
+    //自分のチャットの翻訳(翻訳機能デバッグ用)
     @SubscribeEvent
     public static void onClientChat(ClientChatEvent event) {
+        if (TranslationDebugLogger.DEBUG)
+            return;
         if (sending) {
             sending = false;
             event.setCanceled(true);
@@ -52,9 +47,5 @@ public class AutoTranslator {
         } else {
             sending = true;
         }
-    }
-
-    public static void onCommonSetup(FMLCommonSetupEvent event) {
-        TranslationCache.load();
     }
 }
