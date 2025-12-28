@@ -8,7 +8,6 @@
   ],
   "client": [
     "FontFormattedMixin"
-
   ],
   "injectors": {
     "defaultRequire": 1

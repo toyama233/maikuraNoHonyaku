@@ -11,7 +11,6 @@ import static com.example.autotranslator.debug.TranslationDebugLogger.logOnce;
 
 public class ModClassifierUtil {
 
-    // ブラックリスト: 翻訳しないパッケージ
     private static final Set<String> BLACKLIST = new HashSet<>();
     private static final Set<String> TRANSLATION_BLACKLIST = new HashSet<>();
     private static final Set<String> TEXTFIELD_BLACKLIST = new HashSet<>();
@@ -30,18 +29,17 @@ public class ModClassifierUtil {
         BLACKLIST.add("sun.");
         BLACKLIST.add("jdk.");
 
-        // NeoForge / Forge
         BLACKLIST.add("net.neoforged.");
 
-        // Mixin
         BLACKLIST.add("org.spongepowered.asm.");
 
-        // 自分のMOD（無限ループ防止）
         BLACKLIST.add("com.example.autotranslator.");
 
+        //翻訳の対象のブラックリスト(前方一致)
         TRANSLATION_BLACKLIST.add("mezz.jei.");                      // JEI
         TRANSLATION_BLACKLIST.add("journeymap.");                    // JourneyMap
 
+        //翻訳対象のブラックリスト(部分一致)
         TEXTFIELD_BLACKLIST.add("Text");
         TEXTFIELD_BLACKLIST.add("Search");
     }
