@@ -25,3 +25,8 @@ run-data
 
 repo
 /libs/
+
+*.zip
+*.html
+forge-*-mdk.zip
+MDK-*.zip
