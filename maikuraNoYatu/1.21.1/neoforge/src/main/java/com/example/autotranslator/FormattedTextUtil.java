@@ -10,7 +10,7 @@ public class FormattedTextUtil {
 
         seq.accept((index, style, codePoint) -> {
             sb.appendCodePoint(codePoint);
-            return true; // 続行
+            return true;
         });
 
         return sb.toString();
